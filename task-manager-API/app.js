@@ -1,7 +1,7 @@
-require('./db/connect')
-
 const express = require('express')
 const app = express()
+
+const connectDatabase = require('./db/connect')
 
 // get routes
 const taskManagerRouter = require('./routes/taskManager')
@@ -23,4 +23,13 @@ app.use('/api/v1/tasks', taskManagerRouter)
 // app.delete('/api/v1/tasks/:id', callback)
 
 const port = 3000
-app.listen(port, console.log(`server listening to port ${port}`))
+
+async function start() {
+  try {
+    await connectDatabase()
+    app.listen(port, console.log(`server listening to port ${port}`))
+  } catch (error) {
+    console.log(error)
+  }
+}
+start()
