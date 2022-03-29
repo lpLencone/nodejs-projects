@@ -24,7 +24,8 @@ app.use('/api/v1/tasks', taskManagerRouter)
 app.use(notFound)
 app.use(errorHandlerMiddleware)
 
-const port = 3000
+// PORT=xxxx node app.js
+const port = process.env.PORT || 3000
 
 // start the server
 async function start() {
