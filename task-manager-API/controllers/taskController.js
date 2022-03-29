@@ -1,30 +1,120 @@
-// /api/v1/tasks
-function getTasks(req, res) {
-  res.json({
-    completed: true,
-    taskID: 4,
-    name: 'task1'
-  })
-}
-function createTask(req, res) {
-  /*
-    const body = req.body
-    res.json({body}) // { "body":{ "name":value } }
-  */
+// importing Schema to set the documents' structure
+const Task = require('../models/Task')
 
-  const { name } = req.body
-  res.json({ name }) // { "name":value }
+// /api/v1/tasks
+async function getTasks(req, res) {
+  try {
+    // find all documents
+    const tasks = await Task.find({})
+    res.status(200).json({ tasks })
+  } catch (error) {
+    res.send(error)
+    console.log(error)
+  }
+}
+
+async function createTask(req, res) {
+  try {
+    const task = await Task.create(req.body)
+    console.log({ 'new created Task': task })
+    res.status(201).json(task)
+  } catch (error) {
+    // get error message
+    const errorMessage = error
+    // format user friendly
+    const errorString = `Your request returned an error: "${errorMessage}"`
+    console.log(errorString)
+    res.status(500).send(errorString)
+  }
 }
 
 // /api/v1/tasks/:id
-function getSingleTask(req, res) {
-  res.json('get single')
+async function getSingleTask(req, res) {
+  try {
+    const { id: taskID } = req.params
+    // find single document
+    const task = await Task.findOne({ _id: taskID })
+    console.log(`Task "${task.name}" was selected.`)
+
+    if (!task) {
+      return res.status(404).json({ msg: `No task with id ${taskID}` })
+    }
+
+    res.status(200).json({ task })
+    return task
+  } catch (error) {
+    // get error message
+    const errorMessage = error
+    // format user friendly
+    const errorString = `Your request returned an error: "${errorMessage}"`
+    console.log(errorString)
+    res.status(500).send(errorString)
+  }
 }
-function updateTask(req, res) {
-  res.send('udpate task')
+
+async function updateTask(req, res) {
+  try {
+    const { id: taskID } = req.params
+    const outdatedTask = await Task.findOne({ _id: taskID })
+    const newInfo = req.body
+    const task = await Task.findOneAndUpdate(
+      // condition parameter
+      { _id: taskID },
+      // update object parameter (comes directly from the client)
+      newInfo,
+      // options
+      {
+        // new: if true, return the updated document rather than the original one
+        new: true,
+        // runValidators: if true, make sure that the update comply with the validators set in the schema
+        runValidators: true
+      }
+    )
+
+    if (!task) {
+      return res.status(404).json({ msg: `No task with id ${taskID}` })
+    }
+
+    console.log(
+      `Task recently edited: "name:${outdatedTask.name}, completed:${outdatedTask.completed}" -> "name:${task.name}, completed:${task.completed}"`
+    )
+
+    res.status(200).json({
+      'task id': taskID,
+      'old info': {
+        name: outdatedTask.name,
+        completed: outdatedTask.completed
+      },
+      'updated info': newInfo
+    })
+  } catch (error) {
+    const errorMessage = error
+    const errorString = `Your request returned an error: "${errorMessage}"`
+    console.log(errorString)
+    res.status(500).send(errorString)
+  }
 }
-function deleteTask(req, res) {
-  res.send('delet task')
+
+async function deleteTask(req, res) {
+  try {
+    const { id: taskID } = req.params
+    const deletedTask = await Task.findOneAndDelete({ _id: taskID })
+
+    if (!deletedTask) {
+      return res.status(404).json({ msg: `No task with id ${taskID}` })
+    }
+
+    console.log(`${deletedTask.name} was deleted`)
+    res.status(204).json({ message: 'success' })
+
+    // to see on the postman
+    // res.status(200).json(deletedTask)
+  } catch (error) {
+    const errorMessage = error
+    const errorString = `Your request returned an error: "${errorMessage}"`
+    console.log(errorString)
+    res.status(500).send(errorString)
+  }
 }
 
 module.exports = {

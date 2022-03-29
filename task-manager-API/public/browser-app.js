@@ -3,6 +3,7 @@ const loadingDOM = document.querySelector('.loading-text')
 const formDOM = document.querySelector('.task-form')
 const taskInputDOM = document.querySelector('.task-input')
 const formAlertDOM = document.querySelector('.form-alert')
+
 // Load tasks from /api/tasks
 const showTasks = async () => {
   loadingDOM.style.visibility = 'visible'
@@ -35,6 +36,7 @@ const showTasks = async () => {
       .join('')
     tasksDOM.innerHTML = allTasks
   } catch (error) {
+    console.log(error)
     tasksDOM.innerHTML =
       '<h5 class="empty-list">There was an error, please try later....</h5>'
   }
@@ -44,7 +46,6 @@ const showTasks = async () => {
 showTasks()
 
 // delete task /api/tasks/:id
-
 tasksDOM.addEventListener('click', async e => {
   const el = e.target
   if (el.parentElement.classList.contains('delete-btn')) {
@@ -61,7 +62,6 @@ tasksDOM.addEventListener('click', async e => {
 })
 
 // form
-
 formDOM.addEventListener('submit', async e => {
   e.preventDefault()
   const name = taskInputDOM.value
