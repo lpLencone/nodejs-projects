@@ -13,9 +13,8 @@ app.use(express.urlencoded({ extended: false }))
 // parse json
 app.use(express.json())
 
-app.use('/api/v1/tasks', taskManagerRouter)
-
 // routes
+app.use('/api/v1/tasks', taskManagerRouter)
 // app.get('/api/v1/tasks', callback)
 // app.post('/api/v1/tasks', callback)
 // app.get('/api/v1/tasks/:id', callback)

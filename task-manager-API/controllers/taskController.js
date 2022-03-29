@@ -52,49 +52,6 @@ async function getSingleTask(req, res) {
   }
 }
 
-async function updateTask(req, res) {
-  try {
-    const { id: taskID } = req.params
-    const outdatedTask = await Task.findOne({ _id: taskID })
-    const newInfo = req.body
-    const task = await Task.findOneAndUpdate(
-      // condition parameter
-      { _id: taskID },
-      // update object parameter (comes directly from the client)
-      newInfo,
-      // options
-      {
-        // new: if true, return the updated document rather than the original one
-        new: true,
-        // runValidators: if true, make sure that the update comply with the validators set in the schema
-        runValidators: true
-      }
-    )
-
-    if (!task) {
-      return res.status(404).json({ msg: `No task with id ${taskID}` })
-    }
-
-    console.log(
-      `Task recently edited: "name:${outdatedTask.name}, completed:${outdatedTask.completed}" -> "name:${task.name}, completed:${task.completed}"`
-    )
-
-    res.status(200).json({
-      'task id': taskID,
-      'old info': {
-        name: outdatedTask.name,
-        completed: outdatedTask.completed
-      },
-      'updated info': newInfo
-    })
-  } catch (error) {
-    const errorMessage = error
-    const errorString = `Your request returned an error: "${errorMessage}"`
-    console.log(errorString)
-    res.status(500).send(errorString)
-  }
-}
-
 async function deleteTask(req, res) {
   try {
     const { id: taskID } = req.params
@@ -117,10 +74,55 @@ async function deleteTask(req, res) {
   }
 }
 
+async function updateTask(req, res) {
+  try {
+    const { id: taskID } = req.params
+    const originalTask = await Task.findOne({ _id: taskID })
+    const newInfo = req.body
+    const task = await Task.findOneAndUpdate(
+      // condition parameter
+      { _id: taskID },
+      // update object parameter (comes directly from the client)
+      newInfo,
+      // options
+      {
+        // new: if true, return the updated document rather than the original one
+        new: true,
+        // runValidators: if true, make sure that the update comply with the validators set in the schema
+        runValidators: true
+      }
+    )
+
+    if (!task) {
+      return res.status(404).json({ msg: `No task with id ${taskID}` })
+    }
+
+    console.log(
+      `Task recently edited: "name:${originalTask.name}, completed:${originalTask.completed}" -> "name:${task.name}, completed:${task.completed}"`
+    )
+
+    res.status(200).json({
+      'task id': taskID,
+      'old info': {
+        name: originalTask.name,
+        completed: originalTask.completed
+      },
+      'updated info': newInfo
+    })
+  } catch (error) {
+    const errorMessage = error
+    const errorString = `Your request returned an error: "${errorMessage}"`
+    console.log(errorString)
+    res.status(500).send(errorString)
+  }
+}
+
 module.exports = {
   getTasks,
   getSingleTask,
   createTask,
   updateTask,
-  deleteTask
+  deleteTask,
+  // temp
+  editTask
 }
