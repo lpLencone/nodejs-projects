@@ -3,7 +3,7 @@ const mongoose = require('mongoose')
 const ProductSchema = new mongoose.Schema({
   name: { type: String, required: [true, 'product name must be provided'] },
   price: { type: Number, required: [true, 'product price must be provided'] },
-  feature: { type: Boolean, default: false },
+  featured: { type: Boolean, default: false },
   rating: { type: Number, default: 0 },
   createdAt: { type: Date, default: Date.now() },
   company: {

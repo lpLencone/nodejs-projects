@@ -1,6 +1,7 @@
 const errorHandlerMiddleware = (err, req, res, next) => {
   const errorType = err.name
   console.log(errorType)
+  console.log(err)
 
   if (errorType === 'CastError') {
     const requestedItemId = err.value
@@ -14,6 +15,13 @@ const errorHandlerMiddleware = (err, req, res, next) => {
 
   if (errorType === 'ValidationError') {
     const errorMessage = err.errors.name.message
+    return res.status(500).json({
+      msg: errorMessage
+    })
+  }
+
+  if (errorType === 'TypeError') {
+    const errorMessage = err
     return res.status(500).json({
       msg: errorMessage
     })

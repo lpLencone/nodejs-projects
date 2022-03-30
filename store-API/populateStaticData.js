@@ -4,16 +4,18 @@ const connectToDatabase = require('./db/connect')
 const Product = require('./models/productSchema')
 const jsonProducts = require('./staticProducts.json')
 
-const connect = async () => {
+const start = async () => {
   try {
     await connectToDatabase(process.env.MONGO_URI)
+    // delete all products from the database
+    await Product.deleteMany()
+    // add static products
+    await Product.create(jsonProducts)
+    console.log('success')
+    process.exit(0)
   } catch (error) {
     console.log(error)
+    process.exit(1)
   }
 }
-connect()
-
-jsonProducts.forEach(async product => {
-  const createdProduct = await Product.create(product)
-  console.log(`new created product: ${createdProduct}`)
-})
+start()
