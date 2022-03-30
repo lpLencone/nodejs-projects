@@ -24,7 +24,8 @@ const getAllProductsStatic = async (req, res) => {
 }
 
 const getAllProducts = async (req, res) => {
-  const { name, price, company, featured, sort, fields } = req.query
+  const { name, price, company, featured, sort, fields, numericFilters } =
+    req.query
   const requestQueryObject = {}
 
   // check which queries were provided and configure them into the requestQueryObject
@@ -40,9 +41,38 @@ const getAllProducts = async (req, res) => {
   if (price) {
     requestQueryObject.price = price
   }
+  if (numericFilters) {
+    const operatorMap = {
+      '>': '$gt',
+      '>=': '$gte',
+      '=': '$eq',
+      '<': '$lt',
+      '<=': '$lte'
+    }
+    // go study regEx ;-;
+    const regEx = /\b(<|<=|=|>|>=)\b/g
+    let filters = numericFilters.replace(
+      regEx,
+      match => `-${operatorMap[match]}-`
+    )
+    const numericFiltersOptions = ['price', 'rating']
+    filters.split(',').forEach(item => {
+      const [field, operator, value] = item.split('-')
+      if (numericFiltersOptions.includes(field)) {
+        // if field object already exists, add new operator property and its value
+        if (requestQueryObject[field]) {
+          requestQueryObject[field][operator] = Number(value)
+        }
+        // else create the object with given property and value
+        else {
+          requestQueryObject[field] = { [operator]: Number(value) }
+        }
+      }
+    })
+  }
 
   // show which filters will be used on the console
-  // console.log('requestQueryObject thus far:', requestQueryObject)
+  console.log('requestQueryObject:', requestQueryObject)
 
   // will return a promise yet able to configure
   const productQueryPromise = Product.find(requestQueryObject)
