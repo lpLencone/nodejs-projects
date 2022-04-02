@@ -2,7 +2,6 @@
 const { UnauthenticatedError } = require('../errors')
 // importing JSON WebToken to auxiliate on the authentication
 const jwt = require('jsonwebtoken')
-const UnauthenticatedError = require('../../3-jwt-basics/errors/unauthenticated')
 
 // setting up authentication middleware
 const authenticationMiddleware = async (req, res, next) => {
