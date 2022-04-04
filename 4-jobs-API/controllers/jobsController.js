@@ -1,4 +1,4 @@
-// const error
+const User = require('../models/User')
 //
 const getAllJobs = async (req, res) => {
   res.status(200).json({ msg: 'getalljobs' })
@@ -9,7 +9,7 @@ const getJob = async (req, res) => {
 }
 
 const createJob = async (req, res) => {
-  res.status(200).json({ msg: 'createJob' })
+  res.status(200).json({ msg: 'createJob', user: req.user })
 }
 
 const deleteJob = async (req, res) => {

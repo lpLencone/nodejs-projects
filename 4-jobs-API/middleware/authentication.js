@@ -1,5 +1,3 @@
-// import user schema
-const User = require('../models/User')
 // import Custom Error Class
 const { UnauthenticatedError } = require('../errors')
 // import JSON WebToken to auxiliate on the authentication
