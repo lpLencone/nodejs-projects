@@ -21,4 +21,10 @@ const updateJob = async (req, res) => {
 }
 
 //
-module.exports = { getAllJobs, getJob, createJob, deleteJob, updateJob }
+module.exports = {
+  getAllJobs,
+  getJob,
+  createJob,
+  deleteJob,
+  updateJob
+}

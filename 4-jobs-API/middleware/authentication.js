@@ -12,7 +12,7 @@ const authenticationMiddleware = async (req, res, next) => {
 
   // return error if JSONWebToken is not provided (properly)
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return UnauthenticatedError(
+    throw new UnauthenticatedError(
       'Token is not valid or does not exist.'
     )
   }
