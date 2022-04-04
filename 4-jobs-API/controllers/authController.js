@@ -1,23 +1,41 @@
 const User = require('../models/User')
 const { StatusCodes } = require('http-status-codes')
-const { BadRequestError } = require('../errors')
+const { BadRequestError, UnauthenticatedError } = require('../errors')
 const bcrypt = require('bcryptjs')
-//
+//##################################//
 const register = async (req, res) => {
-  // ### All of the commented code below is taken care of in ../models/User.js ###
-  // // get new user info
-  // const { name, email, password } = req.body
-  // // create random hash password
-  // const salt = await bcrypt.genSalt(10)
-  // const hashedPassword = await bcrypt.hash(password, salt)
-  // const tempUser = { name, email, password: hashedPassword }
-  //
+  // create user out of the information the client sent
   const user = await User.create({ ...req.body })
-  res.status(StatusCodes.CREATED).json(user)
+  // send back user name and token
+  res.status(StatusCodes.CREATED).json({
+    user: { name: user.name },
+    // invoke the instance method to create token, declared in the User.js file
+    token: user.createJWToken()
+  })
 }
 
 const login = async (req, res) => {
-  res.send('login route idk')
+  const { email, password } = req.body
+  // chech whether credentials were provided
+  if (!email || !password) {
+    throw new BadRequestError('provide email and password')
+  }
+
+  const user = await User.findOne({ email })
+  // check whether user exists
+  if (!user) {
+    throw new UnauthenticatedError('invalid credentials')
+  }
+  // check whether password is correct
+  const isPasswordCorrect = user.checkPassword(password)
+  if (!isPasswordCorrect) {
+    throw new UnauthenticatedError('invalid credentials')
+  }
+
+  res.status(StatusCodes.OK).json({
+    user: { name: user.name },
+    token: user.createJWToken()
+  })
 }
 
 //
