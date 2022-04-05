@@ -22,10 +22,10 @@ const authenticationMiddleware = async (req, res, next) => {
     // verify whether the token is valid, and if so, get the data it referenciates
     const payload = jwt.verify(token, process.env.JWT_SECRET)
     // get desired data
-    const { userId, name } = payload
+    const { userId } = payload
     // set user property to the request object,
     // so it can be accessed from another middleware dealing with the same request
-    req.user = { userId, name }
+    req.user = { userId }
 
     // everything being alright, executes next handler
     next()
